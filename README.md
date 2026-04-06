@@ -51,7 +51,7 @@
 
 ### Dockerビルド
 
-1. git clone git@github.com:hi-san10/coachtech_rese.git
+1. git clone git@github.com:hi-san10/rese.git
 
 2. docker-compose up -d --build
 
