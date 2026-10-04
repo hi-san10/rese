@@ -1,58 +1,55 @@
-# Rese(飲食店予約サービス)
+# 飲食店予約サービス Rese
 
-## 外部の飲食店予約サービスは手数料を取られるので自社で予約サービスを持つために作成
+## アプリ概要
 
-## 機能一覧
-・ 会員登録
+飲食店の検索・予約ができる予約サービスです。外部の予約サービスに支払う手数料をなくし、自社で予約を管理することを目的に作成しました。
 
-・ 会員登録時にメールによる本人認証
+## 目次
+- [アプリ概要](#アプリ概要)
+- [画面イメージ](#画面イメージ)
+- [環境構築](#環境構築)
+- [使用技術](#使用技術)
+- [ER図](#er図)
+- [設計・実装のポイント](#設計実装のポイント)
+- [URL](#url)
 
-・ ログイン
+### 主な機能
+#### 一般ユーザーができること
+- 会員登録(メール認証あり) / ログイン / ログアウト
+- 飲食店の検索(エリア / ジャンル / 店名)
+- 飲食店のお気に入り登録
+- 飲食店の予約 / 予約の変更 / 予約の削除
+- 予約情報をQRコードで表示
+- 飲食店の評価とコメント
+- マイページで予約・お気に入りの一覧を確認
 
-・ 管理者ログイン
+#### 店舗代表者ができること
+- ログイン / ログアウト
+- 店舗の作成 / 店舗情報の変更(店舗画像のアップロード)
+- 店舗の予約情報の確認
 
-・ 店舗代表者ログイン
+#### 管理者ができること
+- ログイン / ログアウト
+- 店舗代表者の作成
+- ユーザーへのメール送信
 
-・ ログアウト
-
-・ ユーザー別マイページ
-
-・ ユーザー飲食店お気に入り一覧取得
-
-・ ユーザー飲食店予約機能
-
-・ ユーザー飲食店予約削除
-
-・ ユーザー飲食店予約情報取得
-
-・ ユーザー飲食店予約情報変更
-
-・ ユーザー飲食店予約情報をQRコードで表示
-
-・ ユーザー飲食店評価とコメント機能
-
-・ 飲食店をエリア(都道府県)検索
-
-・ 飲食店をジャンル検索
-
-・ 飲食店を店名(ワード)で検索
-
-・ 管理者が店舗代表者作成
-
-・ 管理者がユーザーにメールを送信
-
-・ 店舗代表者が店舗作成
-
-・ 店舗代表者が店舗情報変更
-
-・ 店舗代表者が店舗の予約情報確認
+## 画面イメージ
+### 飲食店一覧画面
+![飲食店一覧画面画像](./docs/images/shop-list.png)
+### 飲食店詳細・予約画面
+![飲食店詳細・予約画面画像](./docs/images/shop-detail.png)
+### マイページ
+![マイページ画像](./docs/images/mypage.png)
+### 店舗代表者 店舗管理画面
+![店舗代表者 店舗管理画面画像](./docs/images/owner.png)
+### 管理者画面
+![管理者画面画像](./docs/images/admin.png)
 
 ## 環境構築
 
 ### Dockerビルド
 
 1. git clone git@github.com:hi-san10/rese.git
-
 2. docker-compose up -d --build
 
 *MYSQLは、OSによって起動しない場合があるのでそれぞれのPCに合わせて docker-compose.yml ファイルを編集してください。
@@ -60,81 +57,70 @@
 ### Laravel環境構築
 
 1. docker-compose exec php bash
-
 2. composer install
-
-3. env.example ファイルから .env を作成し、環境変数を変更
-
-    ・開発環境ではMailtrapサービスを使ってメール機能を開発しています
-
-    ・Mailtrap url:[https://mailtrap.io](https://mailtrap.io)
-
-    ・アカウント作成後、ログインする
-
-    ・左メニューにある Email Testing リンク、もしくは画面中央あたりの Email Testing の「Start Testing」ボタンをクリック
-
-    ・SMTP Settings タブをクリック
-
-    ・Integrations セレクトボックスで、Laravel 7.x,8.x を選択
-
-    ・copy ボタンをクリックして、クリップボードに .env の情報を保存
-
-    ・.envにコピーした情報を貼り付ける
-        ![75F1C55F-FC14-46BE-898D-9C25817259E9](https://github.com/user-attachments/assets/571e1894-4346-4b98-883d-af7e577a743e)
-
-    ・php artisan config:clear　で.env情報を更新
-
-
+3. .env.example ファイルから .env を作成し、docker-compose.ymlに応じて環境変数を変更(メールの設定は下記参照)
 4. php artisan key:generate
-
 5. php artisan migrate
+6. php artisan storage:link
+7. php artisan db:seed
 
-6. php artisan db:seed
+#### シーディングされるダミーデータ
+- 一般ユーザーのダミーデータ1件分
+  - email: `user@mail.com` / password: `0000`
+- 管理者のダミーデータ
+  - email: `admin@email.com` / password: `1111`
+- 店舗代表者のダミーデータ(ログイン例1件、ほか19件)
+  - email: `sennin@email.com` / password: `0001`
+- 店舗のダミーデータ20件分
+- エリア(都道府県)のデータ47件分
+- ジャンルのデータ5件分
 
-・ 管理者と店舗代表者のメールアドレスとパスワードを画像からご確認ください
+### メール設定(Mailtrap)
+開発環境ではMailtrapサービスを使ってメール機能を開発しています。
 
+- Mailtrap url:[https://mailtrap.io](https://mailtrap.io)
+- アカウント作成後、ログインする
+- 左メニューにある Email Testing リンク、もしくは画面中央あたりの Email Testing の「Start Testing」ボタンをクリック
+- SMTP Settings タブをクリック
+- Integrations セレクトボックスで、Laravel 7.x,8.x を選択
+- copy ボタンをクリックして、クリップボードに .env の情報を保存
+- .envにコピーした情報を貼り付ける
 
-・ 管理者のダミーデータ↓
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your_mailtrap_username   # ← Mailtrap の SMTP Settings の値に置き換え
+MAIL_PASSWORD=your_mailtrap_password   # ← Mailtrap の SMTP Settings の値に置き換え
+MAIL_ENCRYPTION=tls
 
-![103985DE-3AFC-41D1-B28B-B189BDC8938A](https://github.com/user-attachments/assets/cf370312-651d-4836-94b7-b7154552033a)
+MAIL_FROM_ADDRESS=example@example.com
+MAIL_FROM_NAME="${APP_NAME}"
+```
 
-・ 店舗代表者のダミーデータ↓
-    ![FD5EA0FD-041B-4AEF-B432-22E28D01A9C7](https://github.com/user-attachments/assets/ad3966fc-6179-4ad1-84c8-c06de3f32963)
-    ![04B1E917-C4CF-48AF-910B-4D830017AE1E](https://github.com/user-attachments/assets/761d5d2d-7075-4a9a-82fc-d6607e250670)
-    ![05112EF6-A728-4446-BB89-E15254AA7D07](https://github.com/user-attachments/assets/ea45b5fe-2d70-4aaa-be4f-b36a69fef9be)
-    ![A93B5A1B-B63E-4FC8-A7BC-F8BCA12CEA87](https://github.com/user-attachments/assets/a66365ee-31e6-4599-98cd-2de535aacd1a)
-    ![FED2A9A7-3812-4C43-AB98-95DBED98E53A](https://github.com/user-attachments/assets/b1af28ea-7392-46c2-b236-10264c396df3)
-
-・ 店舗のダミーデータ20件分
-
-・ エリア(都道府県)のデータ47件分
-
-・ ジャンルのデータ5件分
-
+.env を更新したら `php artisan config:clear` を実行してください。
 
 ## 使用技術
 
-・PHP 7.4.9
-
-・Laravel 8.83
-
-・MYSQL 8.0
+- PHP 7.4.9
+- Laravel 8.83
+- MYSQL 8.0
+- Docker / Docker Compose
+- Nginx
+- AWS(EC2)へのデプロイを経験(現在は停止)
 
 ## ER図
 
-![68665E27-D515-47E8-A490-7EC4B65D6E67](https://github.com/user-attachments/assets/f58ca598-9b35-4f09-bc88-8b3a363d5455)
+![ER図画像](docs/images/er.jpeg)
 
-## テーブル仕様書
-
-![368CB9FA-147A-4D91-9D24-022E0649C094](https://github.com/user-attachments/assets/bfc9375e-4bab-43df-a9db-433b8130d6ba)
-![917D21F8-6803-4C15-94C4-702D24E7793C](https://github.com/user-attachments/assets/2a361865-e6ef-4c53-bcea-a9df2842c3bf)
-![7592347D-D03A-4ED0-B3B2-FFC6243FB860](https://github.com/user-attachments/assets/756497af-bf88-4ed8-8d6a-e60fa67a0910)
-![20FC4574-AE0E-498E-A402-CEBD096EB953](https://github.com/user-attachments/assets/3d7d7014-563d-4b14-9512-4fea07add639)
+## 設計・実装のポイント
+- Docker環境を構築し、環境差異なく動作するよう設計
+- 一般ユーザー・店舗代表者・管理者の3つの権限を分け、それぞれに必要な機能だけを提供
+- 予約情報をQRコードで表示し、来店時に提示できるようにしている
+- ブレイクポイントを768pxとし、タブレット・スマートフォンに対応したレスポンシブデザインを実装
+- アップロードされた店舗画像はストレージに保存し、シンボリックリンク経由で表示
 
 ## URL
 
-・アプリケーション(開発環境):[http//localhost/](http//localhost/)
-
-・アプリケーション(本番環境):[http://ec2-35-78-70-206.ap-northeast-1.compute.amazonaws.com](http://ec2-35-78-70-206.ap-northeast-1.compute.amazonaws.com)
-
-・phpMyAdmin:[http//localhost:8080](http/localhost:8080)
+- アプリケーション(開発環境):[http://localhost/](http://localhost/)
+- phpMyAdmin(開発環境):[http://localhost:8080](http://localhost:8080)
