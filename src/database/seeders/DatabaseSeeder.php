@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call(RestaurantsTableSeeder::class);
         $this->call(Admin_usersTableSeeder::class);
         $this->call(Restaurant_ownersTableSeeder::class);
-        // $this->call(UsersTableSeeder::class);
+        $this->call(UsersTableSeeder::class);
         // User::factory(20)->create();
     }
 }
